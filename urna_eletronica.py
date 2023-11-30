@@ -1,4 +1,6 @@
 # urna eletrônica criada para o desafio da disciplina de estrutura de dados
+import pickle
+
 
 def ler_candidatos():
     # Nome do arquivo
@@ -89,16 +91,7 @@ def ler_eleitores():
 
 
 def verificar_titulo_eleitor(eleitor_titulo, eleitores):
-    """
-    Verifica se o título de eleitor do eleitor está na lista de eleitores.
 
-    Parâmetros:
-    - eleitor_titulo (str): Título de eleitor do eleitor a ser verificado.
-    - eleitores (list): Lista de eleitores.
-
-    Retorno:
-    - bool: True se o título de eleitor está na lista de eleitores, False caso contrário.
-    """
     # Itera sobre a lista de eleitores
     for eleitor in eleitores:
         # Compara o título de eleitor fornecido com os títulos de eleitor na lista
@@ -110,60 +103,84 @@ def verificar_titulo_eleitor(eleitor_titulo, eleitores):
 
 
 def coleta_votos(candidatos, eleitores, votos):
-    # Solicitar a UF da urna
-    uf_urna = input("Informe a UF da urna: ").upper()
+    op = "S"
+    while op == "S":
+        # ele criou uma variavel op...essa variavel, toda vez que ela for "S", ela recomeça a votação sem que eu precise voltar no menu
 
-    # Solicitar título de eleitor do eleitor
-    titulo_eleitor = input("Digite seu título de eleitor para votar: ")
+        # Solicitar título de eleitor do eleitor
+        titulo_eleitor = input("Digite seu título de eleitor para votar: ")
 
-    # Verificar se o título de eleitor do eleitor está na lista de eleitores
-    if verificar_titulo_eleitor(titulo_eleitor, eleitores):
-        eleitor_autenticado = True
-        print("Eleitor autenticado. Pode prosseguir com a votação.")
+        # Chama a função verificar_titulo_eleitor para ver se o título digitado está na lista
+        if verificar_titulo_eleitor(titulo_eleitor, eleitores):
+            eleitor_autenticado = True
+            print("Eleitor autenticado. Pode prosseguir com a votação.")
 
-        # Adicionar informações sobre o eleitor
-        eleitor = [
-            eleitor for eleitor in eleitores if eleitor['titulo_eleitor'] == titulo_eleitor][0]
-        print("Eleitor:", eleitor['nome'])
-        print(f"Estado: {uf_urna}")
-    else:
-        eleitor_autenticado = False
-        print("Título de eleitor não encontrado na lista de eleitores...\n Retornando para o menu")
-        return
+            # se estiver na lista, devolve que foi autenticado e informa o nome e o estado do eleitor
+            eleitor = [
+                eleitor for eleitor in eleitores if eleitor['titulo_eleitor'] == titulo_eleitor][0]
+            print("Eleitor:", eleitor['nome'])
+            print("Estado:", eleitor['estado'])
+        else:
+            eleitor_autenticado = False
+            print(
+                "Título de eleitor não encontrado na lista de eleitores...\n Retornando para o menu")
+            return
 
-    # Lista para armazenar candidatos já votados
-    candidatos_votados = []
+        # Lista para armazenar candidatos já votados
+        candidatos_votados = []
 
-    # Coleta de votos para Deputado Estadual
-    voto_dep_estadual = coletar_voto(
-        "Deputado Estadual", candidatos, candidatos_votados)
+        # Coleta de votos para Deputado Estadual
+        voto_dep_estadual = coletar_voto(
+            "Deputado Estadual", candidatos, candidatos_votados)
 
-    # Adiciona o candidato votado à lista de candidatos votados
-    candidatos_votados.append(voto_dep_estadual)
+        # Adiciona o candidato votado à lista de candidatos votados
+        candidatos_votados.append(voto_dep_estadual)
 
-    # Coleta de votos para Deputado Federal
-    voto_dep_federal = coletar_voto(
-        "Deputado Federal", candidatos, candidatos_votados)
+        # Coleta de votos para Deputado Federal
+        voto_dep_federal = coletar_voto(
+            "Deputado Federal", candidatos, candidatos_votados)
 
-    # Adiciona o candidato votado à lista de candidatos votados
-    candidatos_votados.append(voto_dep_federal)
+        # Adiciona o candidato votado à lista de candidatos votados
+        candidatos_votados.append(voto_dep_federal)
 
-    # Coleta de votos para Senador
-    voto_senador = coletar_voto("Senador", candidatos, candidatos_votados)
+        # Coleta de votos para Senador
+        voto_senador = coletar_voto("Senador", candidatos, candidatos_votados)
 
-    # Adiciona o candidato votado à lista de candidatos votados
-    candidatos_votados.append(voto_senador)
+        # Adiciona o candidato votado à lista de candidatos votados
+        candidatos_votados.append(voto_senador)
 
-    # Coleta de votos para Governador
-    voto_governador = coletar_voto(
-        "Governador", candidatos, candidatos_votados)
+        # Coleta de votos para Governador
+        voto_governador = coletar_voto(
+            "Governador", candidatos, candidatos_votados)
 
-    # Adiciona o candidato votado à lista de candidatos votados
-    candidatos_votados.append(voto_governador)
+        # Adiciona o candidato votado à lista de candidatos votados
+        candidatos_votados.append(voto_governador)
 
-    # Coleta de votos para Presidente
-    voto_presidente = coletar_voto(
-        "Presidente", candidatos, candidatos_votados)
+        # Coleta de votos para Presidente
+        voto_presidente = coletar_voto(
+            "Presidente", candidatos, candidatos_votados)
+
+        # Adiciona o candidato votado à lista de candidatos votados
+        candidatos_votados.append(voto_presidente)
+
+        # Adiciona os votos à lista de votos
+        votos = {}
+        votos["Deputado Estadual"] = voto_dep_estadual
+        votos["Deputado Estadual"] = voto_dep_estadual
+        votos["Deputado Federal"] = voto_dep_federal
+        votos["Senador"] = voto_senador
+        votos["Governador"] = voto_governador
+        votos["Presidente"] = voto_presidente
+
+        print(votos)
+
+        # Salvar votos em um arquivo binário
+        salvar_votos(votos)
+        op = input("Deseja continuar a votação? S/N")
+# BASICAMENTE O rafael sugeriu uma correção em votos, pois antes estava como dicionário com append e isso nao existe.
+# criou-se um dicionario votos, e esse dicionáro passou a salvar individualmente cada voto de cada eleitor
+
+# o professor, corrigiu a questão da repetição. O codigo antes era executado uma vez a votação e depois voltava para o menu, agora ele criou uma repetição enquanto eu quiser pode continuar votando
 
 
 def coletar_voto(genero, candidatos, candidatos_votados):
@@ -189,7 +206,30 @@ def coletar_voto(genero, candidatos, candidatos_votados):
                   genero}. Tente novamente.")
 
 
-# def salvar_votos():
+def salvar_votos(votos):
+    # Nome do arquivo binário
+    nome_arquivo_binario = "votos.bin"
+
+    # Abrir o arquivo binário em modo de escrita (wb) usando a codificação UTF-8
+    with open(nome_arquivo_binario, 'wb') as arquivo_binario:
+        # Usa o módulo pickle para serializar e salvar os votos no arquivo binário
+        pickle.dump(votos, arquivo_binario, protocol=pickle.HIGHEST_PROTOCOL)
+
+
+def carregar_votos():
+    # Nome do arquivo binário
+    nome_arquivo_binario = "votos.bin"
+
+    try:
+        # Abrir o arquivo binário em modo de leitura (rb) usando a codificação UTF-8
+        with open(nome_arquivo_binario, 'rb') as arquivo_binario:
+            # Usa o módulo pickle para desserializar e carregar os votos do arquivo binário
+            votos = pickle.load(arquivo_binario)
+            return votos
+    except FileNotFoundError:
+        # Se o arquivo não for encontrado, retorna uma lista vazia
+        return []
+
 
 def menu_principal():
     # Inicialização de variáveis
@@ -220,7 +260,7 @@ def menu_principal():
         elif escolha == "3":
             coleta_votos(candidatos, eleitores, votos)
         elif escolha == "4":
-            apurar_votos(votos, candidatos)
+            carregar_votos(votos, candidatos)
         elif escolha == "5":
             mostrar_resultados(votos)
         elif escolha == "6":
@@ -230,17 +270,18 @@ def menu_principal():
             print("Opção inválida. Por favor, escolha de 1 a 6.")
 
 
-# Função para apurar os votos
 # def apurar_votos()
+
 
 # def mostrar_resultados()
 
-# Função principal do programa
+
 def main():
     # Chama a função menu_principal para iniciar o programa
     menu_principal()
 
 
+# Verifica se o script está sendo executado diretamente
 if __name__ == "__main__":
     # Chama a função principal
     main()
