@@ -2,34 +2,41 @@
 
 def ler_candidatos():
     # Nome do arquivo
-    nome_arquivo = "candidatos.txt"  # Nome do arquivo que contém os dados dos candidatos e que vamos utilizar 
+    # Nome do arquivo que contém os dados dos candidatos e que vamos utilizar
+    nome_arquivo = "candidatos.txt"
 
     # Lista para armazenar os candidatos
     candidatos = []  # Inicialização de uma lista vazia para armazenar os dados dos candidatos
 
     # Abrir o arquivo em modo de leitura
-    with open(nome_arquivo, 'r', encoding='utf-8') as arquivo: #"r" modo read, leitura - utf-8 indica a codificação de caracteres que deve ser usada ao ler ou escrever no arquivo.
+    # "r" modo read, leitura - utf-8 indica a codificação de caracteres que deve ser usada ao ler ou escrever no arquivo.
+    with open(nome_arquivo, 'r', encoding='utf-8') as arquivo:
         # Ler todas as linhas do arquivo
         linhas = arquivo.readlines()  # Lê todas as linhas do arquivo e armazena em uma lista
 
         # Iterar sobre as linhas do arquivo
-        for linha_numero, linha in enumerate(linhas, start=1):  # Itera sobre cada linha do arquivo
+        # Itera sobre cada linha do arquivo
+        for linha_numero, linha in enumerate(linhas, start=1):
             try:
                 # Dividir a linha nos elementos usando a vírgula como separador
-                dados = linha.strip().split(',')  # Divide a linha em elementos usando ',' como separador
+                # Divide a linha em elementos usando ',' como separador
+                dados = linha.strip().split(',')
 
                 # Validar se há informações suficientes na linha
                 if len(dados) != 5:  # Verifica se a linha contém exatamente 5 elementos
                     raise ValueError(
-                        "Formato inválido na linha {}: {}".format(linha_numero, linha))  # Gera um erro se o formato não for válido
+                        # Gera um erro se o formato não for válido
+                        "Formato inválido na linha {}: {}".format(linha_numero, linha))
 
                 # Extrair os dados e criar um dicionário
                 nome, numero, partido, estado, genero = dados  # Desempacota os dados da linha
                 candidato = {'nome': nome.strip(), 'numero': int(numero.strip()), 'partido': partido.strip(),
-                             'estado': estado.strip(), 'genero': genero.strip()}  # Cria um dicionário com os dados do candidato
+                             # Cria um dicionário com os dados do candidato
+                             'estado': estado.strip(), 'genero': genero.strip()}
 
                 # Adicionar o candidato à lista
-                candidatos.append(candidato)  # Adiciona o dicionário à lista de candidatos
+                # Adiciona o dicionário à lista de candidatos
+                candidatos.append(candidato)
 
             except Exception as e:
                 # Tratar erros e imprimir informações sobre a linha com erro
@@ -80,11 +87,6 @@ def ler_eleitores():
     # Retornar a lista de eleitores
     return eleitores
 
-# Chama a função ler_eleitores() para testar
-# eleitores = ler_eleitores()
-# print(eleitores)
-
-
 
 def verificar_titulo_eleitor(eleitor_titulo, eleitores):
     """
@@ -108,6 +110,9 @@ def verificar_titulo_eleitor(eleitor_titulo, eleitores):
 
 
 def coleta_votos(candidatos, eleitores, votos):
+    # Solicitar a UF da urna
+    uf_urna = input("Informe a UF da urna: ").upper()
+
     # Solicitar título de eleitor do eleitor
     titulo_eleitor = input("Digite seu título de eleitor para votar: ")
 
@@ -120,7 +125,7 @@ def coleta_votos(candidatos, eleitores, votos):
         eleitor = [
             eleitor for eleitor in eleitores if eleitor['titulo_eleitor'] == titulo_eleitor][0]
         print("Eleitor:", eleitor['nome'])
-        print("Estado: MG")
+        print(f"Estado: {uf_urna}")
     else:
         eleitor_autenticado = False
         print("Título de eleitor não encontrado na lista de eleitores...\n Retornando para o menu")
@@ -160,8 +165,6 @@ def coleta_votos(candidatos, eleitores, votos):
     voto_presidente = coletar_voto(
         "Presidente", candidatos, candidatos_votados)
 
- 
-
 
 def coletar_voto(genero, candidatos, candidatos_votados):
     while True:
@@ -186,29 +189,7 @@ def coletar_voto(genero, candidatos, candidatos_votados):
                   genero}. Tente novamente.")
 
 
-def salvar_votos(votos, rg, dep_estadual, dep_federal, senador, governador, presidente):
-    """
-    Salva os votos no arquivo de votos.
-
-    Parâmetros:
-    - votos (list): Lista de votos já existente (pode ser uma lista vazia).
-    - rg (str): RG do eleitor.
-    - dep_estadual (str): Número do candidato a Deputado Estadual.
-    - dep_federal (str): Número do candidato a Deputado Federal.
-    - senador (str): Número do candidato a Senador.
-    - governador (str): Número do candidato a Governador.
-    - presidente (str): Número do candidato a Presidente.
-    """
-    # Adiciona os votos à lista de votos
-    votos.append({
-        'rg': rg,
-        'dep_estadual': dep_estadual,
-        'dep_federal': dep_federal,
-        'senador': senador,
-        'governador': governador,
-        'presidente': presidente
-    })
-
+# def salvar_votos():
 
 def menu_principal():
     # Inicialização de variáveis
@@ -250,59 +231,9 @@ def menu_principal():
 
 
 # Função para apurar os votos
-def apurar_votos(votos, candidatos):
-    """
-    Apura os votos e conta a quantidade de votos recebidos por cada candidato em cada cargo.
+# def apurar_votos()
 
-    Parâmetros:
-    - votos (list): Lista de votos.
-    - candidatos (list): Lista de candidatos.
-
-    Retorno:
-    - dict: Dicionário contendo os resultados da apuração.
-    """
-    # Inicializa um dicionário para armazenar os resultados
-    resultados = {candidato['numero']: {'nome': candidato['nome'], 'cargo': None, 'votos': 0} for candidato in candidatos}
-
-    # Itera sobre os votos
-    for voto in votos:
-        # Itera sobre os cargos no voto
-        for cargo, candidato in voto.items():
-            # Atualiza os resultados com o voto para o candidato correspondente ao número
-            if candidato['numero'] in resultados:
-                resultados[candidato['numero']]['votos'] += 1
-                resultados[candidato['numero']]['cargo'] = cargo
-
-    return resultados
-
-
-def mostrar_resultados(resultados, eleitores_totais, votos_nominais, votos_brancos, votos_nulos):
-    """
-    Mostra os resultados da apuração.
-
-    Parâmetros:
-    - resultados (dict): Dicionário contendo os resultados da apuração.
-    - eleitores_totais (int): Número total de eleitores aptos.
-    - votos_nominais (int): Número total de votos nominais.
-    - votos_brancos (int): Número total de votos em branco.
-    - votos_nulos (int): Número total de votos nulos.
-    """
-    # Calcula a porcentagem de votos nominais
-    porcentagem_nominais = (votos_nominais / eleitores_totais) * 100
-
-    # Exibe informações gerais
-    print(f"Eleitores Aptos: {eleitores_totais}")
-    print(f"Total de Votos Nominais: {votos_nominais}")
-    print(f"Brancos: {votos_brancos}")
-    print(f"Nulos: {votos_nulos}")
-
-    # Exibe resultados por candidato
-    for numero_candidato, resultado in resultados.items():
-        if resultado['cargo']:
-            porcentagem_votos = (resultado['votos'] / votos_nominais) * 100
-            print(f"Candidato: {resultado['nome']} | Cargo: {resultado['cargo']} | Estado: {resultado['estado']} | "
-                  f"Votos: {resultado['votos']} ({porcentagem_votos:.2f}%)")
-
+# def mostrar_resultados()
 
 # Função principal do programa
 def main():
@@ -310,7 +241,6 @@ def main():
     menu_principal()
 
 
-# Verifica se o script está sendo executado diretamente
 if __name__ == "__main__":
     # Chama a função principal
     main()
