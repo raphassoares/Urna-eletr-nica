@@ -311,3 +311,12 @@ if __name__ == "__main__":
     main()
     # Aqui, basicamente estão verificando se o escript está sendo executado como programa principal, e ele faz isso
     # chamando a função principal.
+
+
+# o que falta para o código?
+# 1 - implementar a questão dos votos brancos e nulos na etapa de coletar votos e na etapa de análise;
+# 2 - tentar organizar a questão do UF;
+# 3 - forçar o código durante o uso para tentar encontrar bugs.
+# Com tudo isso feito e funcional, partir para os adicionais
+# 4 - implementar na frente do candidato com maior % de votos a palavra, "eleito";
+# 5 - implementar gráficos que mostrem os resultados dos candidatos.
