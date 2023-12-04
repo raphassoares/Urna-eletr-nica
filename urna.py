@@ -171,13 +171,57 @@ def coleta_votos(candidatos, eleitores, votos):
     return votos
 
 
+def coleta_votos(candidatos, eleitores, votos):
+    op = "S"
+    while op == "S":
+        uf_urna = input("Digite a UF da urna: ").upper()
+
+        titulo_eleitor = input("Digite seu título de eleitor para votar: ")
+
+        if verificar_titulo_eleitor(titulo_eleitor, eleitores):
+            eleitor_autenticado = True
+            print("Eleitor autenticado. Pode prosseguir com a votação")
+            eleitor = [
+                eleitor for eleitor in eleitores if eleitor['titulo_eleitor'] == titulo_eleitor][0]
+            print("Eleitor: ", eleitor['nome'])
+            print("Estado: ", eleitor['estado'])
+        else:
+            eleitor_autenticado = False
+            print(
+                "Título de eleitor não encontrado na lista de eleitores...\n Retornando para o Menu")
+            return votos
+
+        voto_nominal = {}
+
+        # Coletamos os votos para cada cargo, agora seguindo a nova ordem
+        voto_nominal['Deputado Estadual'] = coletar_voto(
+            "Deputado Estadual: ", candidatos, [], uf_urna)
+        voto_nominal['Deputado Federal'] = coletar_voto(
+            "Deputado Federal: ", candidatos, [], uf_urna)
+        voto_nominal['Senador'] = coletar_voto(
+            "Senador: ", candidatos, [], uf_urna)
+        voto_nominal['Governador'] = coletar_voto(
+            "Governador: ", candidatos, [], uf_urna)
+        voto_nominal['Presidente'] = coletar_voto(
+            "Presidente: ", candidatos, [], uf_urna)
+
+        votos.append({'eleitor': eleitor, 'voto_nominal': voto_nominal})
+
+        print("Voto registrado com sucesso!")
+
+        op = input("Deseja continuar a votação? S/N: ").upper()
+
+    return votos
+
+
 def coletar_voto(cargo, candidatos, candidatos_votados, uf_urna):
     while True:
-        numero_candidato = input(f"Informe o voto para {cargo} (ou deixe em branco para voto em branco): ").strip()
+        numero_candidato = input(f"Informe o voto para {
+                                 cargo} (ou deixe em branco para voto em branco): ").strip()
 
-        # Verificar se o número do candidato é válido ou representa voto em branco
         if numero_candidato == "":
-            confirmacao_branco = input("Confirma o voto em branco (S ou N)? ").upper()
+            confirmacao_branco = input(
+                "Confirma o voto em branco (S ou N)? ").upper()
             if confirmacao_branco == 'S':
                 return None  # Voto em branco
             else:
@@ -190,7 +234,8 @@ def coletar_voto(cargo, candidatos, candidatos_votados, uf_urna):
                  and candidato['estado'] == uf_urna), None)
 
             if candidato_encontrado:
-                print(f"Candidato: {candidato_encontrado['nome']} | Partido: {candidato_encontrado['partido']}")
+                print(f"Candidato: {candidato_encontrado['nome']} | Partido: {
+                      candidato_encontrado['partido']}")
                 confirmacao = input("Confirma o voto (S ou N)? ").upper()
 
                 if confirmacao == 'S':
@@ -198,14 +243,16 @@ def coletar_voto(cargo, candidatos, candidatos_votados, uf_urna):
                 else:
                     print("Voto cancelado. Informe outro número.")
             else:
-                confirmacao_nulo = input("Número de candidato inválido. Confirma anular o voto (S ou N)? ").upper()
+                confirmacao_nulo = input(
+                    "Número de candidato inválido. Confirma anular o voto (S ou N)? ").upper()
                 if confirmacao_nulo == 'S':
                     print("Voto anulado.")
                     return None  # Voto nulo
                 else:
                     print("Voto cancelado. Informe outro número.")
         else:
-            confirmacao_nulo = input("Número inválido. Confirma anular o voto (S ou N)? ").upper()
+            confirmacao_nulo = input(
+                "Número inválido. Confirma anular o voto (S ou N)? ").upper()
             if confirmacao_nulo == 'S':
                 print("Voto anulado.")
                 return None  # Voto nulo
@@ -337,12 +384,13 @@ if __name__ == "__main__":
     # Aqui, basicamente estão verificando se o escript está sendo executado como programa principal, e ele faz isso
     # chamando a função principal.
 
-#segurança
+# segurança
 
 # o que falta para o código?
 # 1 - implementar a questão dos votos brancos e nulos na etapa de coletar votos(RESOLVIDO) e na etapa de análise;
 
-# 2 - tentar organizar a questão do UF; (Resolvido) Agora, qualquer número inválido ou não adequado com a UF,
+# 2 - tentar organizar a questão do UF; (Resolvido) 
+# Agora, qualquer número inválido ou não adequado com a UF,
 # será considerado como inválido e será perguntado se quer anular o voto
 
 # 3 - forçar o código durante o uso para tentar encontrar bugs. (RESOLVIDO)
