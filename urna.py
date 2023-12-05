@@ -11,7 +11,7 @@
 # def para divulgar o resultado
 
 import pickle
-
+import matplotlib.pyplot as plt
 
 
 def ler_candidatos():
@@ -285,6 +285,37 @@ def mostrar_resultados(resultados, eleitores_aptos, total_votos, candidatos):
         print()
 
 
+def mostrar_grafico(resultados):
+    # Função para mostrar gráfico de resultados
+    cargos = []
+    votos = []
+    nomes_eleitos = []
+
+    for cargo, info in resultados[0].items():
+        # Encontrar o candidato eleito (com maior porcentagem)
+        candidato_eleito = max(info['candidatos'].values(),
+                               key=lambda x: x['votos'] / info['votos'] if info['votos'] > 0 else 0)
+
+        cargos.append(cargo)
+        votos.append(info['votos'])
+        nomes_eleitos.append(candidato_eleito['nome'])
+
+    # Criar gráfico de barras
+    fig, ax = plt.subplots()
+    bars = ax.bar(cargos, votos, color='blue')
+
+    # Adicionar nome do eleito sobre cada barra
+    for bar, nome_eleito in zip(bars, nomes_eleitos):
+        height = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width() / 2, height,
+                nome_eleito, ha='center', va='bottom', fontsize=8, fontweight='bold')
+
+    plt.xlabel('Cargos')
+    plt.ylabel('Número de Votos')
+    plt.title('Resultado da Eleição')
+    plt.show()
+
+
 def menu_principal():
     # Função que define e organiza o menu e sua lógica
     # Dar início às variáveis
@@ -303,9 +334,10 @@ def menu_principal():
         print("4 - Apurar votos")
         print("5 - Mostrar resultados")
         print("6 - Fechar programa")
+        print("7 - Mostrar gráfico")
 
         # Para obter a escolha do usuário:
-        escolha = input("Escolha a opção (1 a 6): ")
+        escolha = input("Escolha a opção (1 a 7): ")
 
         # Realiza a ação de acordo com a escolha do usuário:
         if escolha == "1":
@@ -330,8 +362,13 @@ def menu_principal():
         elif escolha == "6":
             print("Encerrando o programa. Até logo!")
             break
+        elif escolha == "7":  # Adicione a opção para mostrar o gráfico
+            if resultados is not None:
+                mostrar_grafico(resultados)
+            else:
+                print("Você precisa apurar os votos antes de mostrar o gráfico.")
         else:
-            print("Opção inválida. Por favor, escolha de 1 a 6.")
+            print("Opção inválida. Por favor, escolha de 1 a 7.")
 
 
 def main():
@@ -345,4 +382,3 @@ if __name__ == "__main__":
     main()
     # Aqui, basicamente estão verificando se o escript está sendo executado como programa principal, e ele faz isso
     # chamando a função principal.
-
