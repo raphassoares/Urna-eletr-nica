@@ -1,10 +1,10 @@
-Pedro Oliveira, SP15901234, 210987654321, Ribeirão Preto, SP
-Beatriz Almeida, RS16543210, 321098765432, Santa Cruz do Sul, RS
-Lucas Nascimento, RJ18345678, 654321098765, Duque de Caxias, RJ
-Camila Costa, MG18765432, 098765432109, Uberaba, MG
-Bruno Santos, SP15789012, 3, Ribeirão Preto, SP
-Juliana Oliveira, RS16654321, 321098765432, Canoas, RS
-Gustavo Silva, RJ18432109, 2, Niterói, RJ
-Raphael Soares, MG13320046, 543210988888, Lavras, MG
-Raphael Soares, 1, 543210988888, Lavras, MG
-Raphael Soares, MG13320046, 123456, Lavras, MG
+Pedro Oliveira, SP15901234, 1, Ribeirão Preto, SP
+Beatriz Almeida, RS16543210, 2, Santa Cruz do Sul, RS
+Lucas Nascimento, RJ18345678, 3, Duque de Caxias, RJ
+Camila Costa, MG18765432, 4, Uberaba, MG
+Bruno Santos, SP15789012, 5, Ribeirão Preto, SP
+Juliana Oliveira, RS16654321, 6, Canoas, RS
+Gustavo Silva, RJ18432109, 7, Niterói, RJ
+Tiago Junior, MG13320046, 8, Lavras, MG
+Raphael Carvalho, ES15658478, 9, Lavras, MG
+Raphael Santana, MG13320046, 10, Lavras, MG

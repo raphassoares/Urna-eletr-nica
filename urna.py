@@ -13,6 +13,7 @@
 import pickle
 
 
+
 def ler_candidatos():
     # Como vamos ler informações que vão estar em um arquivo, precisamos setar isso para o programa
     arquivo_candidatos = "candidatos.txt"
@@ -119,15 +120,12 @@ def verificar_titulo_eleitor(eleitor_titulo, eleitores):
     return False
 
 
-def coleta_votos(candidatos, eleitores, votos):
+def coleta_votos(candidatos, eleitores, votos, eleitores_que_votaram):
     op = "S"
+    uf_urna = input("Digite a UF da urna: ").upper()
     while op == "S":
-        # Adicionando a pergunta sobre a UF
-        uf_urna = input("Digite a UF da urna: ").upper()
-
         titulo_eleitor = input("Digite seu título de eleitor para votar: ")
-
-        if verificar_titulo_eleitor(titulo_eleitor, eleitores):
+        if verificar_titulo_eleitor(titulo_eleitor, eleitores) and titulo_eleitor not in eleitores_que_votaram:
             eleitor_autenticado = True
             print("Eleitor autenticado. Pode prosseguir com a votação")
             eleitor = [
@@ -137,59 +135,11 @@ def coleta_votos(candidatos, eleitores, votos):
         else:
             eleitor_autenticado = False
             print(
-                "Título de eleitor não encontrado na lista de eleitores...\n Retornando para o Menu")
-            return votos  # Retorna votos para que a lista não seja alterada caso o título não seja autenticado
+                "Título de eleitor não encontrado ou eleitor já votou...\n Retornando para o Menu")
+            return votos, eleitores_que_votaram
 
-        # Criamos um voto nominal vazio para o eleitor
-        voto_nominal = {}
-
-        # Coletamos os votos para cada cargo
-        if eleitor['estado'] == uf_urna:
-            voto_nominal['Deputado Estadual'] = coletar_voto(
-                "Deputado Estadual: ", candidatos, [], uf_urna)
-            voto_nominal['Senador'] = coletar_voto(
-                "Senador: ", candidatos, [], uf_urna)
-            voto_nominal['Governador'] = coletar_voto(
-                "Governador: ", candidatos, [], uf_urna)
-        else:
-            print("Você só pode votar para Deputado Estadual, Senador e Governador no estado da urna. Retornando para o Menu.")
-
-        voto_nominal['Deputado Federal'] = coletar_voto(
-            "Deputado Federal: ", candidatos, [], uf_urna)
-        voto_nominal['Presidente'] = coletar_voto(
-            "Presidente: ", candidatos, [], uf_urna)
-
-        # Adicionamos o voto nominal à lista de votos
-        votos.append({'eleitor': eleitor, 'voto_nominal': voto_nominal})
-
-        print("Voto registrado com sucesso!")
-
-        op = input("Deseja continuar a votação? S/N: ").upper()
-
-    # Adiciona a opção de voto em branco
-
-    return votos
-
-
-def coleta_votos(candidatos, eleitores, votos):
-    op = "S"
-    while op == "S":
-        uf_urna = input("Digite a UF da urna: ").upper()
-
-        titulo_eleitor = input("Digite seu título de eleitor para votar: ")
-
-        if verificar_titulo_eleitor(titulo_eleitor, eleitores):
-            eleitor_autenticado = True
-            print("Eleitor autenticado. Pode prosseguir com a votação")
-            eleitor = [
-                eleitor for eleitor in eleitores if eleitor['titulo_eleitor'] == titulo_eleitor][0]
-            print("Eleitor: ", eleitor['nome'])
-            print("Estado: ", eleitor['estado'])
-        else:
-            eleitor_autenticado = False
-            print(
-                "Título de eleitor não encontrado na lista de eleitores...\n Retornando para o Menu")
-            return votos
+        # Adiciona o título do eleitor à lista de eleitores que já votaram
+        eleitores_que_votaram.append(titulo_eleitor)
 
         voto_nominal = {}
 
@@ -197,13 +147,13 @@ def coleta_votos(candidatos, eleitores, votos):
         voto_nominal['Deputado Estadual'] = coletar_voto(
             "Deputado Estadual: ", candidatos, [], uf_urna)
         voto_nominal['Deputado Federal'] = coletar_voto(
-            "Deputado Federal: ", candidatos, [], uf_urna)
+            "Deputado Federal: ", candidatos, [])
         voto_nominal['Senador'] = coletar_voto(
             "Senador: ", candidatos, [], uf_urna)
         voto_nominal['Governador'] = coletar_voto(
             "Governador: ", candidatos, [], uf_urna)
         voto_nominal['Presidente'] = coletar_voto(
-            "Presidente: ", candidatos, [], uf_urna)
+            "Presidente: ", candidatos, [])
 
         votos.append({'eleitor': eleitor, 'voto_nominal': voto_nominal})
 
@@ -211,10 +161,10 @@ def coleta_votos(candidatos, eleitores, votos):
 
         op = input("Deseja continuar a votação? S/N: ").upper()
 
-    return votos
+    return votos, eleitores_que_votaram
 
 
-def coletar_voto(cargo, candidatos, candidatos_votados, uf_urna):
+def coletar_voto(cargo, candidatos, candidatos_votados, uf_urna=None):
     while True:
         numero_candidato = input(f"Informe o voto para {
                                  cargo} (ou deixe em branco para voto em branco): ").strip()
@@ -228,10 +178,13 @@ def coletar_voto(cargo, candidatos, candidatos_votados, uf_urna):
                 print("Voto cancelado. Informe outro número.")
         elif numero_candidato.isdigit():
             numero_candidato = int(numero_candidato)
+
             candidato_encontrado = next(
                 (candidato for candidato in candidatos if candidato['numero'] == numero_candidato
                  and candidato not in candidatos_votados
-                 and candidato['estado'] == uf_urna), None)
+                 and (uf_urna is None or candidato['estado'] == uf_urna)),
+                None
+            )
 
             if candidato_encontrado:
                 print(f"Candidato: {candidato_encontrado['nome']} | Partido: {
@@ -302,10 +255,8 @@ def apurar_votos(votos, candidatos):
 
 def mostrar_resultados(resultados, eleitores_aptos, total_votos, candidatos):
     print("\n==== Resultados ====")
-    print(f"Eleitores Aptos: {
-          eleitores_aptos} (Quantidade total de eleitores do arquivo de eleitores)")
-    print(f"Total de Votos Nominais: {
-          total_votos} (Total de pessoas que votaram)")
+    print(f"Eleitores Aptos: {eleitores_aptos}")
+    print(f"Total de Votos Nominais: {total_votos}")
 
     print()
 
@@ -315,13 +266,22 @@ def mostrar_resultados(resultados, eleitores_aptos, total_votos, candidatos):
         print(f"Cargo: {cargo} | Estado: {info['estado']} | Votos: {
               info['votos']} ({percentual_cargo:.2f}%)")
 
+        # Encontrar o candidato eleito (com maior porcentagem)
+        candidato_eleito = max(info['candidatos'].values(
+        ), key=lambda x: x['votos'] / info['votos'] if info['votos'] > 0 else 0)
+
         for numero, candidato_info in info['candidatos'].items():
             percentual_candidato = (
                 candidato_info['votos'] / info['votos']) * 100 if info['votos'] > 0 else 0
-            print(f"  Candidato: {candidato_info['nome']} | Partido: {
-                  candidato_info['partido']} | Votos: {candidato_info['votos']} ({percentual_candidato:.2f}%)")
+            resultado_formatado = f"Candidato: {candidato_info['nome']} | Partido: {
+                candidato_info['partido']} | Votos: {candidato_info['votos']} ({percentual_candidato:.2f}%)"
 
-        # Adiciona uma linha de espaço entre cada cargo
+            # Adicionar "Eleito" ao candidato com maior porcentagem
+            if candidato_info == candidato_eleito:
+                resultado_formatado += " - Eleito"
+
+            print(resultado_formatado)
+
         print()
 
 
@@ -332,6 +292,7 @@ def menu_principal():
     eleitores = []
     votos = []
     resultados = None  # Inicializa resultados como None
+    eleitores_que_votaram = []  # Lista para armazenar eleitores que já votaram
 
     while True:
         # Opções do Menu
@@ -354,7 +315,8 @@ def menu_principal():
             eleitores = ler_eleitores()
             print("Arquivo de eleitores lido com sucesso")
         elif escolha == "3":
-            votos = coleta_votos(candidatos, eleitores, votos)
+            votos, eleitores_que_votaram = coleta_votos(
+                candidatos, eleitores, votos, eleitores_que_votaram)
         elif escolha == "4":
             resultados = apurar_votos(votos, candidatos)
         elif escolha == "5":
@@ -384,17 +346,3 @@ if __name__ == "__main__":
     # Aqui, basicamente estão verificando se o escript está sendo executado como programa principal, e ele faz isso
     # chamando a função principal.
 
-# segurança
-
-# o que falta para o código?
-# 1 - implementar a questão dos votos brancos e nulos na etapa de coletar votos(RESOLVIDO) e na etapa de análise;
-
-# 2 - tentar organizar a questão do UF; (Resolvido) 
-# Agora, qualquer número inválido ou não adequado com a UF,
-# será considerado como inválido e será perguntado se quer anular o voto
-
-# 3 - forçar o código durante o uso para tentar encontrar bugs. (RESOLVIDO)
-
-# Com tudo isso feito e funcional, partir para os adicionais
-# 4 - implementar na frente do candidato com maior % de votos a palavra, "eleito";
-# 5 - implementar gráficos que mostrem os resultados dos candidatos.
