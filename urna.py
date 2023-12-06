@@ -11,7 +11,10 @@
 # def para divulgar o resultado
 
 import pickle
+# fornece funcionalidades para serialização e desserialização de objetos Python, permitindo a gravação e leitura de dados de forma eficiente.
+
 import matplotlib.pyplot as plt
+# utilizada para criação de gráficos e visualizações, sendo pyplot uma interface para interagir com o Matplotlib de maneira semelhante ao MATLAB.
 
 
 def ler_candidatos():
@@ -111,6 +114,7 @@ def ler_eleitores():
 def verificar_titulo_eleitor(eleitor_titulo, eleitores):
 
     # itera sobre a lista de eleitores
+    # para cada eleitor dentro de eleitores - sendo que ambos vem da def ler_eleitores -
     for eleitor in eleitores:
         # compara o título de eleitor inserido via input com o valor titulo_eleitor dentro da varivável eleitor
         if eleitor_titulo == eleitor['titulo_eleitor']:
@@ -121,29 +125,43 @@ def verificar_titulo_eleitor(eleitor_titulo, eleitores):
 
 
 def coleta_votos(candidatos, eleitores, votos, eleitores_que_votaram):
+    # Cria uma função para a coleta de votos. Essa função depende de uma segunda que dita um pouco da regra da coleta
     op = "S"
+    # Cria uma variável chamada op - de opção - e define o valor para ela de "S" que será utilizada mais tarde
     uf_urna = input("Digite a UF da urna: ").upper()
+    # cria a variável uf_urna, ela será utilizada posteriormente como um filtro sob condições específicas. O upper define como letra maiúscula
     while op == "S":
+        # Inicia um loop while enquanto a variável 'op' for igual a "S".
+
         titulo_eleitor = input("Digite seu título de eleitor para votar: ")
+        # Solicita ao usuário que digite seu título de eleitor.
+
         if verificar_titulo_eleitor(titulo_eleitor, eleitores) and titulo_eleitor not in eleitores_que_votaram:
+            # Verifica se o título de eleitor é válido (utilizando uma função verificar_titulo_eleitor) e se o eleitor ainda não votou.
             eleitor_autenticado = True
+            # Define a variável 'eleitor_autenticado' como True, indicando que o eleitor foi autenticado com sucesso.
             print("Eleitor autenticado. Pode prosseguir com a votação")
             eleitor = [
                 eleitor for eleitor in eleitores if eleitor['titulo_eleitor'] == titulo_eleitor][0]
+            # Obtém informações sobre o eleitor com base no título de eleitor.
             print("Eleitor: ", eleitor['nome'])
             print("Estado: ", eleitor['estado'])
         else:
             eleitor_autenticado = False
             print(
                 "Título de eleitor não encontrado ou eleitor já votou...\n Retornando para o Menu")
+            # Define a variável 'eleitor_autenticado' como False se o título de eleitor não for válido ou se o eleitor já votou.
+
             return votos, eleitores_que_votaram
 
-        # Adiciona o título do eleitor à lista de eleitores que já votaram
         eleitores_que_votaram.append(titulo_eleitor)
+        # Adiciona o título do eleitor à lista de eleitores que já votaram. Isso quer dizer que, no processo de votação, depois que o título de eleitor 1 votar, ele não pode repetir
+        # pois ele foi adicionado ao parâmetro eleitores_que_votaram.
 
         voto_nominal = {}
+        # Inicializa um dicionário vazio para armazenar os votos nominais.
 
-        # Coletamos os votos para cada cargo, agora seguindo a nova ordem
+        # Coletamos os votos para cada cargo, respeitando a função coletar_votos, que é quem está definindo a lógica da coleta - o que pode e o que não pode -.
         voto_nominal['Deputado Estadual'] = coletar_voto(
             "Deputado Estadual: ", candidatos, [], uf_urna)
         voto_nominal['Deputado Federal'] = coletar_voto(
@@ -154,30 +172,43 @@ def coleta_votos(candidatos, eleitores, votos, eleitores_que_votaram):
             "Governador: ", candidatos, [], uf_urna)
         voto_nominal['Presidente'] = coletar_voto(
             "Presidente: ", candidatos, [])
-
+        # Note que, apenas os votos para deputado federal e presidente não usam a variável uf_urna.
+        # isso porque, é com o uso dela que filtramos os votos ( cargos que são atrelados a estados devem obedecer a uf da urna)
         votos.append({'eleitor': eleitor, 'voto_nominal': voto_nominal})
+        # Adiciona um dicionário contendo informações sobre o eleitor e seus votos à lista de votos.
 
         print("Voto registrado com sucesso!")
 
         op = input("Deseja continuar a votação? S/N: ").upper()
+        # Solicita ao usuário se deseja continuar a votação e converte a resposta para letras maiúsculas. Aqui, no caso, nós ainda estamos dentro daquele while lá de cima.
 
     return votos, eleitores_que_votaram
+    # Retorna as listas 'votos' e 'eleitores_que_votaram' após a conclusão da votação.
 
 
 def coletar_voto(cargo, candidatos, candidatos_votados, uf_urna=None):
+    # Define uma função chamada coletar_voto que recebe quatro parâmetros: cargo, candidatos, candidatos_votados e uf_urna.
+    # Aqui está sendo definida a regra lógica da votação.
+
     while True:
         numero_candidato = input(f"Informe o voto para {
                                  cargo} (ou deixe em branco para voto em branco): ").strip()
+        # Solicita ao usuário que informe o número do candidato para o cargo especificado.
 
         if numero_candidato == "":
+            # Verifica se o número do candidato está em branco.
             confirmacao_branco = input(
                 "Confirma o voto em branco (S ou N)? ").upper()
+            # Pergunta ao usuário se confirma o voto em branco e converte a resposta para letras maiúsculas.
             if confirmacao_branco == 'S':
-                return None  # Voto em branco
+                return None
+            # Se a confirmação for sim, o voto é registrado em branco.
+            # Aqui pode ser o espaço para atacar a falta de registro de voto Branco/nulo
             else:
                 print("Voto cancelado. Informe outro número.")
         elif numero_candidato.isdigit():
             numero_candidato = int(numero_candidato)
+            # Verifica se o número do candidato é composto por digitos. Por segurança, converte para inteiro
 
             candidato_encontrado = next(
                 (candidato for candidato in candidatos if candidato['numero'] == numero_candidato
@@ -185,12 +216,16 @@ def coletar_voto(cargo, candidatos, candidatos_votados, uf_urna=None):
                  and (uf_urna is None or candidato['estado'] == uf_urna)),
                 None
             )
+            # Utiliza uma expressão geradora para encontrar o candidato correspondente ao número informado.
+            # Uma expressão geradora em Python é uma maneira concisa de criar iteradores. Ela utiliza a sintaxe de compreensão de listas, mas difere na forma como os valores são armazenados na memória.
+            # Em vez de criar uma lista completa na memória, a expressão geradora gera os elementos um de cada vez, sob demanda, economizando assim recursos.
 
             if candidato_encontrado:
                 print(f"Candidato: {candidato_encontrado['nome']} | Partido: {
                       candidato_encontrado['partido']}")
+                # Exibe informações sobre o candidato encontrado.
                 confirmacao = input("Confirma o voto (S ou N)? ").upper()
-
+                # Confirma se é nele que vc quer votar
                 if confirmacao == 'S':
                     return candidato_encontrado
                 else:
@@ -224,57 +259,86 @@ def salvar_votos(votos):
 
 
 def apurar_votos(votos, candidatos):
+    # Inicializa um dicionário chamado 'resultados' para armazenar os resultados da apuração para cada cargo.
     resultados = {'Deputado Estadual': {'candidatos': {}, 'estado': None, 'votos': 0},
                   'Deputado Federal': {'candidatos': {}, 'estado': None, 'votos': 0},
                   'Senador': {'candidatos': {}, 'estado': None, 'votos': 0},
                   'Governador': {'candidatos': {}, 'estado': None, 'votos': 0},
                   'Presidente': {'candidatos': {}, 'estado': None, 'votos': 0}}
-
+    # Cada cargo,é associado a um sub-dicionário contendo três informações cruciais.
+    # Primeiramente, a chave 'candidatos' é reservada para um dicionário vazio, projetado para conter detalhes específicos sobre os candidatos que concorrem a esse cargo.
+    # Em seguida, a chave 'estado' é inicialmente configurada como None, indicando que o estado vinculado a esse cargo ainda não foi especificado, podendo ser atualizado posteriormente.
+    # Finalmente, a chave 'votos' é inicializada com o valor zero, representando o número acumulado de votos registrados para esse cargo.
     for voto in votos:
-        # Ajuste aqui para considerar apenas um voto nominal por eleitor
+        # percorre cada voto na lista de votos. Para cada voto, são extraídas informações sobre o eleitor e seus votos nominais.
         eleitor = voto['eleitor']
         voto_nominal = voto['voto_nominal']
         for cargo, candidato in voto_nominal.items():
+            # Dentro do loop externo, inicia um loop for interno que percorre cada cargo e candidato no voto nominal.
+            # Verifica se o candidato não é nulo e, se não estiver no dicionário de candidatos para o cargo, adiciona as informações do candidato.
             if candidato:
+                # Verifica se o candidato não é nulo.
                 if candidato['numero'] not in resultados[cargo]['candidatos']:
+                    # Se o número do candidato ainda não estiver no dicionário de candidatos para o cargo,
+                    # adiciona as informações do candidato.
                     resultados[cargo]['candidatos'][candidato['numero']] = {
                         'nome': candidato['nome'],
                         'partido': candidato['partido'],
                         'votos': 0
                     }
                 resultados[cargo]['estado'] = candidato['estado']
+                # Atualiza as informações sobre o estado do cargo.
+
                 resultados[cargo]['candidatos'][candidato['numero']
                                                 ]['votos'] += 1
-                resultados[cargo]['votos'] += 1
+                # Incrementa o número de votos para o candidato específico.
 
-    # Correção aqui para contar apenas um voto por eleitor
+                resultados[cargo]['votos'] += 1
+                # Incrementa o número total de votos para o cargo.
+
     total_votos = len(votos)
+    # Calcula o total de votos contando o número de elementos na lista de votos.
 
     return resultados, total_votos
+    # Retorna o dicionário de resultados e o total de votos.
 
 
 def mostrar_resultados(resultados, eleitores_aptos, total_votos, candidatos):
+    # Imprime os cabeçalhos e informações gerais sobre a eleição
     print("\n==== Resultados ====")
     print(f"Eleitores Aptos: {eleitores_aptos}")
     print(f"Total de Votos Nominais: {total_votos}")
 
     print()
+    # Esse print é só para pular uma linha mesmo
 
     for cargo, info in resultados[0].items():
+        # Itera sobre cada cargo nos resultados
         percentual_cargo = (info['votos'] / total_votos) * \
             100 if total_votos > 0 else 0
+        # Calcula o percentual de votos para o cargo
         print(f"Cargo: {cargo} | Estado: {info['estado']} | Votos: {
               info['votos']} ({percentual_cargo:.2f}%)")
+        # Imprime informações sobre o cargo, incluindo o estado, votos e percentual
 
         # Encontrar o candidato eleito (com maior porcentagem)
         candidato_eleito = max(info['candidatos'].values(
         ), key=lambda x: x['votos'] / info['votos'] if info['votos'] > 0 else 0)
+        # Aqui precisamos ir com calma Essa linha de código busca encontrar o candidato eleito para um cargo específico.
+        # Para fazer isso, ela compara todos os candidatos que concorreram ao cargo, levando em conta a quantidade de votos que cada um recebeu em relação ao total de votos para aquele cargo.
+        # A expressão x['votos'] / info['votos'] calcula essa proporção para cada candidato.
+        # A função max é utilizada para encontrar o candidato que tem a maior proporção, ou seja, o candidato com a maior quantidade de votos em relação ao total de votos para o cargo.
+        # A parte if info['votos'] > 0 else 0 garante que não haja divisão por zero, considerando zero se não houver votos no cargo.
+        # Ao final, a variável candidato_eleito recebe o candidato que teve a maior proporção de votos, indicando assim o candidato eleito para o cargo.
 
+        # Itera sobre cada candidato no cargo
         for numero, candidato_info in info['candidatos'].items():
             percentual_candidato = (
                 candidato_info['votos'] / info['votos']) * 100 if info['votos'] > 0 else 0
+            # Calcula o percentual de votos para o candidato
             resultado_formatado = f"Candidato: {candidato_info['nome']} | Partido: {
                 candidato_info['partido']} | Votos: {candidato_info['votos']} ({percentual_candidato:.2f}%)"
+            # Formata o resultado com informações sobre o candidato, partido, votos e percentual
 
             # Adicionar "Eleito" ao candidato com maior porcentagem
             if candidato_info == candidato_eleito:
@@ -290,30 +354,41 @@ def mostrar_grafico(resultados):
     cargos = []
     votos = []
     nomes_eleitos = []
+    # Inicializei as listas para armazenar dados que serão usados no gráfico
 
     for cargo, info in resultados[0].items():
-        # Encontrar o candidato eleito (com maior porcentagem)
-        candidato_eleito = max(info['candidatos'].values(),
-                               key=lambda x: x['votos'] / info['votos'] if info['votos'] > 0 else 0)
+        # Itera sobre cada cargo nos resultados. Encontra o candidato eleito (com maior porcentagem)
+        candidato_eleito = max(info['candidatos'].values(
+        ), key=lambda x: x['votos'] / info['votos'] if info['votos'] > 0 else 0)
 
         cargos.append(cargo)
         votos.append(info['votos'])
         nomes_eleitos.append(candidato_eleito['nome'])
+        # Adiciona informações dos cargos, votos e nomes dos candidatos eleitos às listas criadas anteriormente
 
-    # Criar gráfico de barras
     fig, ax = plt.subplots()
     bars = ax.bar(cargos, votos, color='blue')
+    # Cria um gráfico de barras usando a biblioteca matplotlib
+    # A linha fig, ax = plt.subplots() cria uma nova figura (janela do gráfico) e um conjunto de eixos (a área onde o gráfico será desenhado).
+    # As variáveis fig e ax são usadas para referenciar esses elementos.
 
-    # Adicionar nome do eleito sobre cada barra
+    # Em seguida, a linha bars = ax.bar(cargos, votos, color='blue') utiliza o método bar dos eixos (ax) para criar barras no gráfico de barras.
+    # Os argumentos fornecidos são: 'cargos', 'votos, e cor azul
+
+    # A variável bars armazena as barras criadas no gráfico, permitindo referenciar ou modificar essas barras posteriormente, se necessário.
+
     for bar, nome_eleito in zip(bars, nomes_eleitos):
         height = bar.get_height()
         ax.text(bar.get_x() + bar.get_width() / 2, height,
                 nome_eleito, ha='center', va='bottom', fontsize=8, fontweight='bold')
+        # Adicionar nome do eleito sobre cada barra
 
     plt.xlabel('Cargos')
     plt.ylabel('Número de Votos')
     plt.title('Resultado da Eleição')
+    # Adiciona rótulos ao eixo x e ao eixo y, além de um título para o gráfico
     plt.show()
+    # Exibe o gráfico
 
 
 def menu_principal():
@@ -333,8 +408,8 @@ def menu_principal():
         print("3 - Inicial Votação")
         print("4 - Apurar votos")
         print("5 - Mostrar resultados")
-        print("6 - Fechar programa")
-        print("7 - Mostrar gráfico")
+        print("6 - Mostrar gráfico")
+        print("7 - Fechar programa")
 
         # Para obter a escolha do usuário:
         escolha = input("Escolha a opção (1 a 7): ")
@@ -360,13 +435,14 @@ def menu_principal():
             else:
                 print("Você precisa apurar os votos antes de mostrar os resultados.")
         elif escolha == "6":
-            print("Encerrando o programa. Até logo!")
-            break
-        elif escolha == "7":  # Adicione a opção para mostrar o gráfico
             if resultados is not None:
                 mostrar_grafico(resultados)
             else:
                 print("Você precisa apurar os votos antes de mostrar o gráfico.")
+
+        elif escolha == "7":  # Adicione a opção para mostrar o gráfico
+            print("Encerrando o programa. Até logo!")
+            break
         else:
             print("Opção inválida. Por favor, escolha de 1 a 7.")
 

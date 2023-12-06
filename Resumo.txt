@@ -1,9 +1,13 @@
+Para auxiliar na comprensão do código, além dos comentários, achei pertinente fazer um pequeno resumo mostrando um pouco do código
+
 ler_candidatos:
 
 Define e lê os dados dos candidatos a partir de um arquivo de texto (candidatos.txt).
 Para cada linha no arquivo, divide os elementos usando a vírgula como separador.
 Verifica se cada linha contém exatamente 5 elementos (nome, número, partido, estado, cargo).
 Cria um dicionário para cada candidato e adiciona à lista de candidatos.
+
+
 
 ler_eleitores:
 
@@ -12,17 +16,102 @@ Para cada linha no arquivo, divide os elementos usando a vírgula como separador
 Verifica se cada linha contém exatamente 5 elementos (nome, rg, título eleitor, município, estado).
 Cria um dicionário para cada eleitor e adiciona à lista de eleitores.
 
+
+
 verificar_titulo_eleitor:
 
 Recebe o título de eleitor inserido pelo usuário e a lista de eleitores.
 Itera sobre a lista de eleitores e compara o título inserido com os títulos na lista.
 Retorna True se encontrar uma correspondência, indicando que o eleitor está autenticado, e False caso contrário.
 
+
+
 coletar_votos e coletar_voto:
 
-coletar_votos é uma função principal para a coleta de votos. Inicia um loop para a coleta enquanto o usuário desejar.
-coletar_voto é chamada para cada cargo específico (Deputado Estadual, Deputado Federal, etc.).
-Para cada cargo, solicita o número do candidato ao usuário, verifica se o número é válido e se o candidato já foi votado.
-Exibe informações sobre o candidato e solicita confirmação do voto.
-Retorna o candidato escolhido.
-Os votos são armazenados em um dicionário para cada cargo e adicionados a um dicionário geral (votos).
+A função coleta_votos é responsável por coordenar a coleta de votos dos eleitores...
+A função coleta_votos gerencia a votação, solicitando o título de eleitor e autenticando o eleitor se o título for válido e ainda não tiver votado. 
+A UF da urna é solicitada como filtro. Os votos são coletados para cargos específicos usando a função coletar_voto. 
+O título do eleitor é registrado para evitar votos duplicados. Os resultados são armazenados em um dicionário e adicionados à lista de votos. 
+O usuário é informado sobre o sucesso do registro do voto, e a opção de continuar a votação é oferecida até que o usuário opte por encerrar a votação. 
+A função retorna as listas de votos e eleitores_que_votaram.
+
+... enquanto a função coletar_voto é uma subfunção utilizada para coletar votos individuais para cada cargo.
+A função coletar_voto define a lógica da votação para um cargo específico. 
+Utiliza um loop infinito (while True) para solicitar ao usuário que informe o número do candidato para o cargo especificado. 
+Se o número estiver em branco, pergunta se confirma o voto em branco. Se sim, retorna None indicando um voto em branco; caso contrário, informa que o voto foi cancelado. 
+Se o número for composto por dígitos, verifica se corresponde a um candidato válido, não votado anteriormente e se está na UF da urna (se especificada). 
+Se encontrado, exibe informações sobre o candidato e pergunta se confirma o voto. Se sim, retorna o candidato; caso contrário, informa que o voto foi cancelado. S
+e o número não for válido, pergunta se confirma anular o voto. Se sim, retorna None indicando um voto nulo; caso contrário, informa que o voto foi cancelado. 
+Aqui estamos lidando com diferentes cenários de votação, incluindo votos em branco e nulos.
+
+
+
+Explicação sobre o funcionamento do filtro de UF (Esse treco deu trabalho para fazer funcionar)
+
+No sistema de votação implementado, a variável uf_urna desempenha um papel crucial ao servir como um filtro para garantir a elegibilidade geográfica dos candidatos durante a coleta de votos. 
+Na função coleta_votos, essa variável é solicitada ao usuário e passada como argumento para a função coletar_voto durante a votação de cargos específicos. 
+Dentro da função coletar_voto, a expressão geradora utiliza a presença da uf_urna para condicionar a busca pelos candidatos, 
+assegurando que apenas candidatos pertencentes à Unidade Federativa da urna sejam apresentados ao eleitor. 
+Notavelmente, alguns cargos, como "Deputado Federal" e "Presidente", não enviam a variável uf_urna ao chamar a função coletar_voto, 
+indicando que não é necessário filtrar candidatos por Unidade Federativa para essas posições específicas. 
+Essa abordagem modular proporciona uma adaptação flexível da lógica de votação com base na necessidade de considerar ou não a localização geográfica para determinados cargos, 
+oferecendo uma personalização eficaz dentro do sistema de votação.
+
+
+
+salvar_votos
+
+A função salvar_votos tem o propósito de salvar os votos em um arquivo binário usando o módulo pickle. 
+Inicialmente, é definido o nome do arquivo binário como "votos.bin". 
+Em seguida, o código utiliza o comando with open(...) para abrir o arquivo binário em modo de escrita (wb), garantindo que ele seja fechado corretamente após o uso.
+Dentro do bloco with, a função pickle.dump é empregada para serializar e salvar os votos no arquivo binário. 
+O parâmetro protocol é configurado como pickle.HIGHEST_PROTOCOL para utilizar o protocolo de serialização mais alto disponível. 
+Essa função é fundamental para armazenar os dados de votos de maneira eficiente e persistente, possibilitando a recuperação posterior.
+
+
+
+apurar_votos
+
+Na função apurar_votos, um dicionário chamado 'resultados' é inicializado para armazenar os resultados da apuração para cada cargo. 
+A função itera sobre cada voto na lista de votos, obtendo informações sobre o eleitor e seus votos nominais. 
+Em seguida, percorre cada cargo e candidato no voto nominal, atualizando o dicionário 'resultados' com informações sobre os candidatos, seus partidos e a contagem de votos. 
+O estado do cargo é definido com base no último candidato votado. 
+A função retorna o dicionário de resultados e o total de votos. 
+Este código realiza a apuração dos votos, contabilizando a quantidade de votos recebidos por cada candidato em cada cargo e fornecendo o estado associado a cada cargo.
+
+Detalhando um pouco mais o final do código...
+Nesta parte específica do código, a lógica está focada na iteração sobre cada voto na lista de votos (for voto in votos) e, 
+para cada voto, itera sobre os cargos e candidatos associados (for cargo, candidato in voto_nominal.items():). 
+O bloco condicional if candidato: verifica se existe um candidato associado ao voto para o cargo atual.
+Se um candidato estiver presente, verifica-se se o número desse candidato ainda não está no dicionário de candidatos para o cargo. 
+Se for o caso, adiciona as informações desse candidato ao dicionário. Posteriormente, atualiza-se o estado do cargo, 
+incrementa-se o número de votos tanto para o candidato específico quanto para o cargo em geral.
+Ao final, o total de votos é calculado contando o número de elementos na lista de votos (len(votos)), e os resultados são retornados juntamente com o total de votos. 
+Essa estrutura garante uma atualização adequada dos resultados da apuração para cada voto e candidato, considerando diferentes cargos eleitorais.
+
+
+
+mostrar_resultados
+
+A função mostrar_resultados tem como objetivo exibir na tela informações consolidadas sobre os resultados de uma eleição. 
+Inicia-se com a impressão de cabeçalhos e dados gerais, como o número de eleitores aptos e o total de votos nominais. 
+Em seguida, há um loop que itera sobre cada cargo presente nos resultados. 
+Para cada cargo, são calculados e exibidos o percentual de votos em relação ao total e informações como o cargo, o estado associado, o número total de votos e o percentual de votos. 
+Além disso, a função determina o candidato eleito para cada cargo com base na maior porcentagem de votos. 
+Em seguida, há um segundo loop que itera sobre cada candidato no cargo, calcula o percentual de votos para cada um e formata as informações do candidato, 
+incluindo nome, partido, votos e percentual. 
+O candidato eleito é identificado e marcado como "Eleito" durante a impressão. 
+Essa abordagem fornece uma apresentação organizada e detalhada dos resultados eleitorais.
+
+
+
+mostrar_grafico
+
+Recebe os resultados de uma eleição como parâmetro. 
+Inicialmente, são criadas listas vazias para armazenar informações sobre os cargos, votos e nomes dos candidatos eleitos. 
+Em seguida, o código itera sobre os cargos nos resultados, identificando o candidato eleito para cada cargo com base na maior porcentagem de votos. 
+As informações relevantes são adicionadas às listas criadas anteriormente. 
+Posteriormente, a função utiliza a biblioteca matplotlib para criar um gráfico de barras, onde 
+cada barra representa um cargo, a altura da barra representa o número de votos, e a cor é definida como azul. 
+Os nomes dos candidatos eleitos são adicionados sobre as barras. Por fim, rótulos são atribuídos aos eixos x e y, e um título é dado ao gráfico. 
+O gráfico resultante é então exibido.

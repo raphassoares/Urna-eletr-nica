@@ -1,9 +1,9 @@
-Pedro Oliveira, SP15901234, 1, Ribeirão Preto, SP
-Beatriz Almeida, RS16543210, 2, Santa Cruz do Sul, RS
-Lucas Nascimento, RJ18345678, 3, Duque de Caxias, RJ
+Pedro Oliveira, SP15901234, 1, Ribeirão Preto, ES
+Beatriz Almeida, RS16543210, 2, Santa Cruz do Sul, MG
+Lucas Nascimento, RJ18345678, 3, Duque de Caxias, MG
 Camila Costa, MG18765432, 4, Uberaba, MG
 Bruno Santos, SP15789012, 5, Ribeirão Preto, SP
-Juliana Oliveira, RS16654321, 6, Canoas, RS
+Juliana Oliveira, RS16654321, 6, Canoas, RJ
 Gustavo Silva, RJ18432109, 7, Niterói, RJ
 Tiago Junior, MG13320046, 8, Lavras, MG
 Raphael Carvalho, ES15658478, 9, Lavras, MG
