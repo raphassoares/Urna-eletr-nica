@@ -34,7 +34,7 @@ Rafaela Nascimento,24,MDB,SP,P
 Thiago Oliveira,34,PDT,ES,P
 Luciana Silva,44,PSOL,RJ,P
 Rodrigo Costa,54,DEM,GO,P
-Camila Mila,66,PT,MG,P
+Camila Mila,65,PT,MG,P
 Ricardo Dao,77,PCdoB,MG,P
 Mariana Alves,14,PSDB,MG,P
 Laura Maura,88,PT,RS,P

@@ -1,4 +1,4 @@
-Pedro Oliveira, SP15901234, 1, Ribeirão Preto, ES
+Pedro Oliveiras, SP15901234, 1, Ribeirão Preto, ES
 Beatriz Almeida, RS16543210, 2, Santa Cruz do Sul, MG
 Lucas Nascimento, RJ18345678, 3, Duque de Caxias, MG
 Camila Costa, MG18765432, 4, Uberaba, MG

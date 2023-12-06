@@ -114,4 +114,4 @@ As informações relevantes são adicionadas às listas criadas anteriormente.
 Posteriormente, a função utiliza a biblioteca matplotlib para criar um gráfico de barras, onde 
 cada barra representa um cargo, a altura da barra representa o número de votos, e a cor é definida como azul. 
 Os nomes dos candidatos eleitos são adicionados sobre as barras. Por fim, rótulos são atribuídos aos eixos x e y, e um título é dado ao gráfico. 
-O gráfico resultante é então exibido.
+O gráfico resultante é então exibido...

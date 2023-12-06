@@ -458,3 +458,6 @@ if __name__ == "__main__":
     main()
     # Aqui, basicamente estão verificando se o escript está sendo executado como programa principal, e ele faz isso
     # chamando a função principal.
+
+
+#v5 - Urna funcional
