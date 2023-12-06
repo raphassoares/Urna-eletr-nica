@@ -27,8 +27,8 @@ Fernando Almeida,33,NOVO,SP,G
 Carla Costa,43,PODE,ES,G
 Vinícius Santos,53,CIDADANIA,RJ,G
 Pedro Fernandes,66,GG,MG,G
-Isabella Bela,77,GL,MG,G
-Laura Lara,88,PT,MG,G
+Isabella Bela,76,GL,MG,G
+Laura Lara,87,PT,MG,G
 Bianca Silva,22,PROS,MG,G54
 Rafaela Nascimento,24,MDB,SP,P
 Thiago Oliveira,34,PDT,ES,P
