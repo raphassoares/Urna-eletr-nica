@@ -115,3 +115,16 @@ Posteriormente, a função utiliza a biblioteca matplotlib para criar um gráfic
 cada barra representa um cargo, a altura da barra representa o número de votos, e a cor é definida como azul. 
 Os nomes dos candidatos eleitos são adicionados sobre as barras. Por fim, rótulos são atribuídos aos eixos x e y, e um título é dado ao gráfico. 
 O gráfico resultante é então exibido...
+
+
+
+Correções pós v5 :
+
+Ampliação do filtro de UF para os eleitores.
+
+"Modifiquei a função verificar_titulo_eleitor para retornar não apenas se o título do eleitor é válido, 
+mas também o estado associado a esse título. Isso permitirá que você verifique se o estado do eleitor 
+é o mesmo da UF digitada."
+
+"Modificar a função coleta_votos para incluir a verificação do estado do eleitor antes de permitir que ele vote. 
+Se o estado do eleitor não for o mesmo da UF digitada, ele não poderá votar."

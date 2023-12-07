@@ -112,46 +112,58 @@ def ler_eleitores():
 
 
 def verificar_titulo_eleitor(eleitor_titulo, eleitores):
-
     # itera sobre a lista de eleitores
     # para cada eleitor dentro de eleitores - sendo que ambos vem da def ler_eleitores -
     for eleitor in eleitores:
         # compara o título de eleitor inserido via input com o valor titulo_eleitor dentro da varivável eleitor
         if eleitor_titulo == eleitor['titulo_eleitor']:
-            return True  # Isso quer dizer que o título digitado pelo eleitor for comparado e está ok com o do arquivo
-
-    # Se o valor do input percorrer a lista e não encontrar nada compativel
-    return False
+            # Isso quer dizer que o título digitado pelo eleitor for comparado e está ok com o do arquivo
+            return True, eleitor['estado']
+        # devolve o título e o estado do eleitor para ser usado posteriormente
+    return False, None
 
 
 def coleta_votos(candidatos, eleitores, votos, eleitores_que_votaram):
-    # Cria uma função para a coleta de votos. Essa função depende de uma segunda que dita um pouco da regra da coleta
     op = "S"
-    # Cria uma variável chamada op - de opção - e define o valor para ela de "S" que será utilizada mais tarde
-    uf_urna = input("Digite a UF da urna: ").upper()
-    # cria a variável uf_urna, ela será utilizada posteriormente como um filtro sob condições específicas. O upper define como letra maiúscula
+    while True:
+        # Cria uma repetição para que a UF apenas aceite letras e, em caso de algo diferente, pede apenas letras e volta
+        # para a repetição até ser só letas
+        uf_urna = input("Digite a UF da urna: ").upper()
+
+    # Verifica se a entrada contém apenas letras
+        if uf_urna.isalpha():
+            print("UF da urna:", uf_urna)
+            break
+        else:
+            print("Por favor, digite apenas letras. Tente novamente.")
+
     while op == "S":
-        # Inicia um loop while enquanto a variável 'op' for igual a "S".
-
+        # Cria a repetição que, enquanto a resposta para a pergunta lá no final,
+        # se eu quero continuar a votação for S, a votação vai continuar.
         titulo_eleitor = input("Digite seu título de eleitor para votar: ")
-        # Solicita ao usuário que digite seu título de eleitor.
 
-        if verificar_titulo_eleitor(titulo_eleitor, eleitores) and titulo_eleitor not in eleitores_que_votaram:
-            # Verifica se o título de eleitor é válido (utilizando uma função verificar_titulo_eleitor) e se o eleitor ainda não votou.
-            eleitor_autenticado = True
-            # Define a variável 'eleitor_autenticado' como True, indicando que o eleitor foi autenticado com sucesso.
-            print("Eleitor autenticado. Pode prosseguir com a votação")
-            eleitor = [
-                eleitor for eleitor in eleitores if eleitor['titulo_eleitor'] == titulo_eleitor][0]
-            # Obtém informações sobre o eleitor com base no título de eleitor.
-            print("Eleitor: ", eleitor['nome'])
-            print("Estado: ", eleitor['estado'])
+       # Verifica o título do eleitor e obtém o estado associado a esse título
+        titulo_valido, estado_eleitor = verificar_titulo_eleitor(
+            titulo_eleitor, eleitores)
+
+        if titulo_valido and titulo_eleitor not in eleitores_que_votaram:
+            # Verifica se o estado do eleitor é o mesmo da UF digitada
+            if estado_eleitor == uf_urna:
+                eleitor_autenticado = True
+                print("Eleitor autenticado. Pode prosseguir com a votação")
+                eleitor = [
+                    eleitor for eleitor in eleitores if eleitor['titulo_eleitor'] == titulo_eleitor][0]
+                print("Eleitor: ", eleitor['nome'])
+                print("Estado: ", eleitor['estado'])
+            else:
+                eleitor_autenticado = False
+                print(
+                    "O estado do eleitor não corresponde à UF da urna. Eleitor não autorizado a votar.")
+                return votos, eleitores_que_votaram
         else:
             eleitor_autenticado = False
             print(
                 "Título de eleitor não encontrado ou eleitor já votou...\n Retornando para o Menu")
-            # Define a variável 'eleitor_autenticado' como False se o título de eleitor não for válido ou se o eleitor já votou.
-
             return votos, eleitores_que_votaram
 
         eleitores_que_votaram.append(titulo_eleitor)
@@ -350,45 +362,73 @@ def mostrar_resultados(resultados, eleitores_aptos, total_votos, candidatos):
 
 
 def mostrar_grafico(resultados):
-    # Função para mostrar gráfico de resultados
     cargos = []
     votos = []
     nomes_eleitos = []
-    # Inicializei as listas para armazenar dados que serão usados no gráfico
+    porcentagens_eleitos = []
 
+    # Inicializando as listas com dados de todos os cargos
     for cargo, info in resultados[0].items():
-        # Itera sobre cada cargo nos resultados. Encontra o candidato eleito (com maior porcentagem)
-        candidato_eleito = max(info['candidatos'].values(
-        ), key=lambda x: x['votos'] / info['votos'] if info['votos'] > 0 else 0)
-
         cargos.append(cargo)
-        votos.append(info['votos'])
+        candidato_eleito = max(info['candidatos'].values(),
+                               key=lambda x: x['votos'] / info['votos'] if info['votos'] > 0 else 0)
+        votos.append(candidato_eleito['votos'])
         nomes_eleitos.append(candidato_eleito['nome'])
-        # Adiciona informações dos cargos, votos e nomes dos candidatos eleitos às listas criadas anteriormente
+        porcentagem_eleito = (candidato_eleito['votos'] / info['votos']) * 100
+        porcentagens_eleitos.append(porcentagem_eleito)
 
+    # Criando o gráfico de barras
     fig, ax = plt.subplots()
-    bars = ax.bar(cargos, votos, color='blue')
-    # Cria um gráfico de barras usando a biblioteca matplotlib
-    # A linha fig, ax = plt.subplots() cria uma nova figura (janela do gráfico) e um conjunto de eixos (a área onde o gráfico será desenhado).
-    # As variáveis fig e ax são usadas para referenciar esses elementos.
+    bars = []
 
-    # Em seguida, a linha bars = ax.bar(cargos, votos, color='blue') utiliza o método bar dos eixos (ax) para criar barras no gráfico de barras.
-    # Os argumentos fornecidos são: 'cargos', 'votos, e cor azul
+    for cargo, votos_eleito, nome_eleito, porcentagem_eleito in zip(cargos, votos, nomes_eleitos, porcentagens_eleitos):
+        # Criando a barra ajustada
+        bar = ax.bar(cargo, votos_eleito, color='blue')
+        bars.append(bar)
 
-    # A variável bars armazena as barras criadas no gráfico, permitindo referenciar ou modificar essas barras posteriormente, se necessário.
+        # Adicionando o nome do eleito e a porcentagem de votos sobre a barra
+        height = bar[0].get_height()
+        ax.text(bar[0].get_x() + bar[0].get_width() / 2, height,
+                f'{nome_eleito}\n{porcentagem_eleito:.2f}%', ha='center', va='bottom', fontsize=8, fontweight='bold')
 
-    for bar, nome_eleito in zip(bars, nomes_eleitos):
-        height = bar.get_height()
-        ax.text(bar.get_x() + bar.get_width() / 2, height,
-                nome_eleito, ha='center', va='bottom', fontsize=8, fontweight='bold')
-        # Adicionar nome do eleito sobre cada barra
+    # Configurando o eixo y para o total de votos nominais na eleição
+    ax.set_ylim(0, max(votos)+1)  # Adicionando uma margem para melhor visualização
 
     plt.xlabel('Cargos')
     plt.ylabel('Número de Votos')
     plt.title('Resultado da Eleição')
-    # Adiciona rótulos ao eixo x e ao eixo y, além de um título para o gráfico
+
     plt.show()
-    # Exibe o gráfico
+
+
+def salvar_votos_txt(votos, resultados, eleitores):
+    nome_arquivo_txt = "votos_resultados.txt"
+
+    with open(nome_arquivo_txt, 'w', encoding='utf-8') as arquivo_txt:
+        # Escreve informações sobre os votos no arquivo de texto
+        arquivo_txt.write("==== Resultados ====\n")
+        arquivo_txt.write(f"Eleitores Aptos: {len(eleitores)}\n")
+        arquivo_txt.write(f"Total de Votos Nominais: {len(votos)}\n\n")
+
+        for cargo, info in resultados[0].items():
+            percentual_cargo = (info['votos'] / len(votos)) * \
+                100 if len(votos) > 0 else 0
+            arquivo_txt.write(f"Cargo: {cargo} | Estado: {info['estado']} | Votos: {
+                              info['votos']} ({percentual_cargo:.2f}%)\n")
+
+            candidato_eleito = max(info['candidatos'].values(
+            ), key=lambda x: x['votos'] / info['votos'] if info['votos'] > 0 else 0)
+
+            for numero, candidato_info in info['candidatos'].items():
+                percentual_candidato = (
+                    candidato_info['votos'] / info['votos']) * 100 if info['votos'] > 0 else 0
+                resultado_formatado = f"Candidato: {candidato_info['nome']} | Partido: {
+                    candidato_info['partido']} | Votos: {candidato_info['votos']} ({percentual_candidato:.2f}%)"
+                if candidato_info == candidato_eleito:
+                    resultado_formatado += " - Eleito"
+                arquivo_txt.write(f"{resultado_formatado}\n")
+
+            arquivo_txt.write("\n")
 
 
 def menu_principal():
@@ -409,10 +449,11 @@ def menu_principal():
         print("4 - Apurar votos")
         print("5 - Mostrar resultados")
         print("6 - Mostrar gráfico")
-        print("7 - Fechar programa")
+        print("7 - Votos txt")
+        print("8 - Fechar programa")
 
         # Para obter a escolha do usuário:
-        escolha = input("Escolha a opção (1 a 7): ")
+        escolha = input("Escolha a opção (1 a 8): ")
 
         # Realiza a ação de acordo com a escolha do usuário:
         if escolha == "1":
@@ -439,12 +480,14 @@ def menu_principal():
                 mostrar_grafico(resultados)
             else:
                 print("Você precisa apurar os votos antes de mostrar o gráfico.")
-
-        elif escolha == "7":  # Adicione a opção para mostrar o gráfico
+        elif escolha == "7":
+            salvar_votos_txt(votos, resultados, eleitores)
+            print("Votos e resultados salvos com sucesso.")
+        elif escolha == "8":
             print("Encerrando o programa. Até logo!")
             break
         else:
-            print("Opção inválida. Por favor, escolha de 1 a 7.")
+            print("Opção inválida. Por favor, escolha de 1 a 8.")
 
 
 def main():
@@ -460,4 +503,4 @@ if __name__ == "__main__":
     # chamando a função principal.
 
 
-#v5 - Urna funcional
+# v5 - Urna funcional

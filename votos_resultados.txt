@@ -1,0 +1,26 @@
+==== Resultados ====
+Eleitores Aptos: 10
+Total de Votos Nominais: 5
+
+Cargo: Deputado Estadual | Estado: MG | Votos: 5 (100.00%)
+Candidato: Mariana Oliveira | Partido: PSDB | Votos: 2 (40.00%)
+Candidato: Amanda Silva | Partido: PCdoB | Votos: 3 (60.00%) - Eleito
+
+Cargo: Deputado Federal | Estado: MG | Votos: 5 (100.00%)
+Candidato: Joaquim Silva | Partido: PT | Votos: 4 (80.00%) - Eleito
+Candidato: Maria Oliveira | Partido: PSDB | Votos: 1 (20.00%)
+
+Cargo: Senador | Estado: MG | Votos: 5 (100.00%)
+Candidato: André Oliveira | Partido: PATRI | Votos: 3 (60.00%) - Eleito
+Candidato: Gabriel Oliveira | Partido: PT | Votos: 1 (20.00%)
+Candidato: Gabriela Santos | Partido: GG | Votos: 1 (20.00%)
+
+Cargo: Governador | Estado: MG | Votos: 5 (100.00%)
+Candidato: Laura Lara | Partido: PT | Votos: 3 (60.00%) - Eleito
+Candidato: Isabella Bela | Partido: GL | Votos: 1 (20.00%)
+Candidato: Pedro Fernandes | Partido: GG | Votos: 1 (20.00%)
+
+Cargo: Presidente | Estado: GO | Votos: 5 (100.00%)
+Candidato: Rodrigo Costa | Partido: DEM | Votos: 4 (80.00%) - Eleito
+Candidato: Mariana Alves | Partido: PSDB | Votos: 1 (20.00%)
+
